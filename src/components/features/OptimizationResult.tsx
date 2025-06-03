@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   TrendingUp, 
   FileText, 
@@ -32,7 +31,6 @@ export function OptimizationResult({
   isLoading = false,
   thinkingProgress = ''
 }: OptimizationResultProps) {
-  const [activeTab, setActiveTab] = useState('overview');
   const [exportFormat, setExportFormat] = useState<'pdf' | 'txt' | 'json'>('pdf');
 
   // 如果正在加载，显示AI思考状态
@@ -101,14 +99,14 @@ export function OptimizationResult({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
-      {/* 结果概览卡片 - 简化版 */}
+    <div className="w-full max-w-5xl mx-auto space-y-6">
+      {/* 结果概览卡片 */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
-              优化结果
+              优化结果概览
             </div>
             <div className="flex items-center gap-2">
               <Badge className={getSEOScoreColor(suggestion.seo.score)}>
@@ -118,7 +116,7 @@ export function OptimizationResult({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div className="text-center p-4 border rounded-lg">
               <FileText className="h-6 w-6 mx-auto mb-2 text-blue-600" />
               <div className="text-sm text-gray-600">标题优化</div>
@@ -135,115 +133,148 @@ export function OptimizationResult({
               <div className="text-base font-semibold">已重写</div>
             </div>
           </div>
+
+          {/* 核心改进建议 */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                🎯 核心改进建议
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2">
+                {suggestion.seo.improvements.slice(0, 6).map((improvement, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <CheckCircle className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />
+                    <span className="text-sm">{improvement}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
         </CardContent>
       </Card>
 
-      {/* 详细结果展示 - 精简版 */}
+      {/* 标题优化详情 */}
       <Card>
-        <CardContent className="p-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="overview">总览</TabsTrigger>
-              <TabsTrigger value="title">标题</TabsTrigger>
-              <TabsTrigger value="description">描述</TabsTrigger>
-            </TabsList>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            📝 标题优化详情
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <h3 className="font-medium mb-2">原始标题</h3>
+            <div className="p-4 bg-gray-50 rounded-lg border">
+              <p className="text-sm">{suggestion.title.original}</p>
+            </div>
+          </div>
+          <div>
+            <h3 className="font-medium mb-2 text-green-700">✨ 优化后标题</h3>
+            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+              <p className="text-sm">{suggestion.title.optimized}</p>
+            </div>
+          </div>
+          <div>
+            <h3 className="font-medium mb-2">主要改进方向</h3>
+            <ul className="space-y-1">
+              {suggestion.title.suggestions.slice(0, 4).map((sug, index) => (
+                <li key={index} className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />
+                  <span className="text-sm">{sug}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
 
-            <TabsContent value="overview" className="space-y-4">
-              <div className="grid gap-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">🎯 核心改进</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {suggestion.seo.improvements.slice(0, 4).map((improvement, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <CheckCircle className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />
-                          <span className="text-sm">{improvement}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
+      {/* 描述优化详情 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            📋 描述优化详情
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <h3 className="font-medium mb-2">原始描述</h3>
+            <div className="p-4 bg-gray-50 rounded-lg border max-h-32 overflow-y-auto">
+              <p className="text-sm whitespace-pre-wrap">{suggestion.description.original}</p>
+            </div>
+          </div>
+          <div>
+            <h3 className="font-medium mb-2 text-green-700">✨ 优化后描述</h3>
+            <div className="p-4 bg-green-50 rounded-lg border border-green-200 max-h-40 overflow-y-auto">
+              <p className="text-sm whitespace-pre-wrap">{suggestion.description.optimized}</p>
+            </div>
+          </div>
+          <div>
+            <h3 className="font-medium mb-2">主要改进方向</h3>
+            <ul className="space-y-1">
+              {suggestion.description.suggestions.slice(0, 4).map((sug, index) => (
+                <li key={index} className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />
+                  <span className="text-sm">{sug}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">📊 关键词优化</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div>
-                        <h4 className="font-medium text-sm mb-2">推荐关键词</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {suggestion.keywords.suggested.slice(0, 8).map((keyword, index) => (
-                            <Badge key={index} variant="default" className="text-xs">
-                              {keyword}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
+      {/* 关键词优化 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            🏷️ 关键词优化策略
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <h4 className="font-medium text-sm mb-2">推荐关键词</h4>
+            <div className="flex flex-wrap gap-2">
+              {suggestion.keywords.suggested.slice(0, 12).map((keyword, index) => (
+                <Badge key={index} variant="default" className="text-xs">
+                  {keyword}
+                </Badge>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h4 className="font-medium text-sm mb-2">策略分析</h4>
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-sm whitespace-pre-wrap">{suggestion.keywords.analysis}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-            <TabsContent value="title" className="space-y-4">
-              <div className="grid gap-4">
-                <div>
-                  <h3 className="font-medium mb-2">原始标题</h3>
-                  <div className="p-4 bg-gray-50 rounded-lg border">
-                    <p className="text-sm">{suggestion.title.original}</p>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-medium mb-2 text-green-700">✨ 优化后标题</h3>
-                  <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                    <p className="text-sm">{suggestion.title.optimized}</p>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-medium mb-2">主要改进</h3>
-                  <ul className="space-y-1">
-                    {suggestion.title.suggestions.slice(0, 3).map((sug, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <CheckCircle className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />
-                        <span className="text-sm">{sug}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="description" className="space-y-4">
-              <div className="grid gap-4">
-                <div>
-                  <h3 className="font-medium mb-2">原始描述</h3>
-                  <div className="p-4 bg-gray-50 rounded-lg border max-h-24 overflow-y-auto">
-                    <p className="text-sm whitespace-pre-wrap">{suggestion.description.original}</p>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-medium mb-2 text-green-700">✨ 优化后描述</h3>
-                  <div className="p-4 bg-green-50 rounded-lg border border-green-200 max-h-32 overflow-y-auto">
-                    <p className="text-sm whitespace-pre-wrap">{suggestion.description.optimized}</p>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-medium mb-2">主要改进</h3>
-                  <ul className="space-y-1">
-                    {suggestion.description.suggestions.slice(0, 3).map((sug, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <CheckCircle className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />
-                        <span className="text-sm">{sug}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </TabsContent>
-          </Tabs>
+      {/* 竞争分析 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            🏆 竞争分析与建议
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <h4 className="font-medium text-sm mb-2">市场分析</h4>
+            <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+              <p className="text-sm whitespace-pre-wrap">{suggestion.competitive.analysis}</p>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-medium text-sm mb-2">竞争策略建议</h4>
+            <ul className="space-y-1">
+              {suggestion.competitive.recommendations.slice(0, 5).map((rec, index) => (
+                <li key={index} className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 mt-0.5 text-purple-600 flex-shrink-0" />
+                  <span className="text-sm">{rec}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </CardContent>
       </Card>
 

@@ -145,11 +145,9 @@ export function ProductForm({ onSubmit, isLoading = false }: ProductFormProps) {
                 {errors.amazonUrl && (
                   <p className="text-sm text-red-500">{errors.amazonUrl.message}</p>
                 )}
-                <div className="text-xs text-gray-500 space-y-1">
-                  <p>支持Amazon各国站点链接，系统将自动提取商品信息</p>
-                  <p className="text-blue-600 font-medium">
-                    💡 开发测试：使用链接 https://www.amazon.com/test/dp/B075CYMYK6 体验完整功能
-                  </p>
+                <div className="text-sm text-gray-600 space-y-1">
+                  <p>支持亚马逊8个主要站点：US, UK, DE, FR, CA, AU, JP, IT</p>
+                  <p>请粘贴完整的商品链接，系统将自动抓取商品信息</p>
                 </div>
               </div>
 
