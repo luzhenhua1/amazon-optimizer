@@ -32,19 +32,26 @@ export default function HomePage() {
           }),
         });
 
+        console.log('API响应状态:', response.status);
+        
         if (!response.ok) {
           const errorData = await response.json();
+          console.error('API错误响应:', errorData);
           throw new Error(errorData.error || '解析失败');
         }
 
         const result = await response.json();
         console.log('解析结果:', result);
+        console.log('解析结果类型:', typeof result);
+        console.log('解析结果success:', result.success);
+        console.log('解析结果data:', result.data);
         
-        if (result.success) {
-          setProductInfo(result.productInfo);
+        if (result.success && result.data) {
+          setProductInfo(result.data);
           setCurrentStep('preview');
         } else {
-          throw new Error(result.error || '解析失败');
+          console.error('解析结果格式错误:', result);
+          throw new Error(result.error || '解析数据格式错误');
         }
       } else {
         // 手动输入模式，直接使用表单数据
