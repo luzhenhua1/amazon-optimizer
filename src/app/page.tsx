@@ -169,13 +169,7 @@ export default function HomePage() {
             optimized: isEnglishMarket 
               ? `${productInfo.title} | Premium Quality | Fast Shipping`
               : `【优质推荐】${productInfo.title}`,
-            suggestions: isEnglishMarket ? [
-              'Add key features and specifications to the title',
-              'Include emotional triggers like "Premium" or "Professional"',
-              'Optimize title length for better search visibility',
-              'Highlight unique selling points',
-              'Include relevant keywords for better SEO'
-            ] : [
+            suggestions: [
               '在标题中添加核心关键词提升搜索排名',
               '使用情感化词汇增强购买欲望',
               '添加产品特色和卖点描述',
@@ -188,13 +182,7 @@ export default function HomePage() {
             optimized: isEnglishMarket 
               ? `${productInfo.description}\n\n✅ Why Choose This Product:\n• Premium quality materials and construction\n• User-friendly design for optimal performance\n• Excellent value with positive customer reviews\n• Fast shipping and reliable customer service`
               : `${productInfo.description}\n\n✅ 专业推荐理由：\n• 优质材料，品质保证\n• 人性化设计，使用便捷\n• 性价比高，用户好评如潮\n• 完善售后，购买无忧`,
-            suggestions: isEnglishMarket ? [
-              'Highlight key product benefits and features',
-              'Add usage scenarios and applications',
-              'Include warranty and customer service information',
-              'Use bullet points for better readability',
-              'Add customer testimonials and social proof'
-            ] : [
+            suggestions: [
               '增加产品核心卖点说明',
               '添加使用场景描述',
               '强化服务承诺和保障',
@@ -207,19 +195,11 @@ export default function HomePage() {
             suggested: isEnglishMarket 
               ? [...productInfo.keywords, 'premium quality', 'best value', 'professional grade', 'customer favorite', 'fast shipping']
               : [...productInfo.keywords, '高品质', '性价比', '专业推荐', '用户好评', '快速发货'],
-            analysis: isEnglishMarket 
-              ? 'Keyword Analysis: Current keywords cover basic needs. Recommend adding long-tail keywords and emotional triggers to improve search visibility and conversion rates.'
-              : '关键词分析：当前关键词覆盖基础需求，建议增加长尾关键词和情感词汇以提升搜索匹配度和转化率。'
+            analysis: '关键词分析：当前关键词覆盖基础需求，建议增加长尾关键词和情感词汇以提升搜索匹配度和转化率。'
           },
           seo: {
             score: 78,
-            improvements: isEnglishMarket ? [
-              'Optimize title keyword density',
-              'Enhance description content completeness',
-              'Expand related keyword coverage',
-              'Improve page user experience',
-              'Strengthen product image optimization'
-            ] : [
+            improvements: [
               '优化标题关键词密度',
               '增强描述内容完整性',
               '扩展相关关键词覆盖',
@@ -228,16 +208,8 @@ export default function HomePage() {
             ]
           },
           competitive: {
-            analysis: isEnglishMarket 
-              ? `${productInfo.category} market analysis: This category shows moderate competition with room for optimization.`
-              : `${productInfo.category}市场竞争分析：该类目竞争适中，有优化空间。`,
-            recommendations: isEnglishMarket ? [
-              'Strengthen product differentiation points',
-              'Optimize pricing strategy',
-              'Improve customer service quality',
-              'Enhance brand building',
-              'Continuously optimize user experience'
-            ] : [
+            analysis: `${productInfo.category}市场竞争分析：该类目竞争适中，有优化空间。`,
+            recommendations: [
               '强化产品差异化卖点',
               '优化价格策略',
               '提升客户服务质量',
