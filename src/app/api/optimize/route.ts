@@ -59,18 +59,19 @@ Keep it concise and ensure valid JSON format.`;
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'deepseek-ai/DeepSeek-R1',
+        model: 'Pro/deepseek-ai/DeepSeek-R1',
         messages: [
           {
             role: 'user',
             content: prompt
           }
         ],
-        max_tokens: 2000,
+        max_tokens: 800,
         temperature: 0.1,
         top_p: 0.9,
         stream: true
-      })
+      }),
+      signal: AbortSignal.timeout(25000) // 25秒超时
     });
 
     if (!response.ok) {
@@ -293,18 +294,19 @@ Keep it concise and ensure valid JSON format.`;
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'deepseek-ai/DeepSeek-R1',
+        model: 'Pro/deepseek-ai/DeepSeek-R1',
         messages: [
           {
             role: 'user',
             content: prompt
           }
         ],
-        max_tokens: 2000,
+        max_tokens: 800,
         temperature: 0.1,
         top_p: 0.9,
         stream: false
-      })
+      }),
+      signal: AbortSignal.timeout(25000) // 25秒超时
     });
 
     if (!response.ok) {
