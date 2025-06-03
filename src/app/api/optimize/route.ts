@@ -153,11 +153,11 @@ function generateOptimizationSuggestions(productInfo: ProductInfo): Optimization
 }
 
 // 硅基流动AI API调用函数 - 支持流式响应
-async function callSiliconFlowAPIWithStream(productInfo: ProductInfo, writer: WritableStreamDefaultWriter) {
+async function callSiliconFlowAPIWithStream(productInfo: ProductInfo, controller: ReadableStreamDefaultController) {
   const apiKey = process.env.SILICON_FLOW_API_KEY;
   
   if (!apiKey) {
-    await writer.write(new TextEncoder().encode('data: {"type":"error","content":"未配置SILICONFLOW_API_KEY，使用模拟数据"}\n\n'));
+    controller.enqueue(new TextEncoder().encode('data: {"type":"error","content":"未配置SILICONFLOW_API_KEY，使用模拟数据"}\n\n'));
     return generateOptimizationSuggestions(productInfo);
   }
 
@@ -242,7 +242,7 @@ async function callSiliconFlowAPIWithStream(productInfo: ProductInfo, writer: Wr
 
 请确保你的分析是基于真实的电商和SEO经验，提供的建议要具体可执行，评分要客观准确。`;
 
-    await writer.write(new TextEncoder().encode('data: {"type":"thinking","content":"🔍 开始深度分析商品信息..."}\n\n'));
+    controller.enqueue(new TextEncoder().encode('data: {"type":"thinking","content":"🔍 开始深度分析商品信息..."}\n\n'));
 
     const response = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
       method: 'POST',
@@ -267,7 +267,7 @@ async function callSiliconFlowAPIWithStream(productInfo: ProductInfo, writer: Wr
 
     if (!response.ok) {
       const errorText = await response.text();
-      await writer.write(new TextEncoder().encode(`data: {"type":"error","content":"API调用失败: ${response.status}"}\n\n`));
+      controller.enqueue(new TextEncoder().encode(`data: {"type":"error","content":"API调用失败: ${response.status}"}\n\n`));
       throw new Error(`SiliconFlow API error: ${response.status} - ${errorText}`);
     }
 
@@ -300,12 +300,12 @@ async function callSiliconFlowAPIWithStream(productInfo: ProductInfo, writer: Wr
             
             if (delta?.content) {
               fullContent += delta.content;
-              await writer.write(new TextEncoder().encode(`data: {"type":"content","content":"${delta.content.replace(/"/g, '\\"')}"}\n\n`));
+              controller.enqueue(new TextEncoder().encode(`data: {"type":"content","content":"${delta.content.replace(/"/g, '\\"')}"}\n\n`));
             }
 
             if (delta?.reasoning_content) {
               reasoningContent += delta.reasoning_content;
-              await writer.write(new TextEncoder().encode(`data: {"type":"thinking","content":"${delta.reasoning_content.replace(/"/g, '\\"')}"}\n\n`));
+              controller.enqueue(new TextEncoder().encode(`data: {"type":"thinking","content":"${delta.reasoning_content.replace(/"/g, '\\"')}"}\n\n`));
             }
           } catch (e) {
             // 忽略解析错误
@@ -314,7 +314,7 @@ async function callSiliconFlowAPIWithStream(productInfo: ProductInfo, writer: Wr
       }
     }
 
-    await writer.write(new TextEncoder().encode('data: {"type":"processing","content":"🔄 正在整理优化建议..."}\n\n'));
+    controller.enqueue(new TextEncoder().encode('data: {"type":"processing","content":"🔄 正在整理优化建议..."}\n\n'));
 
     // 处理完整的响应内容
     try {
@@ -363,22 +363,22 @@ async function callSiliconFlowAPIWithStream(productInfo: ProductInfo, writer: Wr
         }
       };
 
-      await writer.write(new TextEncoder().encode(`data: {"type":"result","content":${JSON.stringify(optimization)}}\n\n`));
+      controller.enqueue(new TextEncoder().encode(`data: {"type":"result","content":${JSON.stringify(optimization)}}\n\n`));
       return optimization;
 
     } catch (parseError) {
       console.warn('AI返回格式解析失败，使用模拟数据:', parseError);
-      await writer.write(new TextEncoder().encode('data: {"type":"warning","content":"AI响应格式有误，使用备用方案"}\n\n'));
+      controller.enqueue(new TextEncoder().encode('data: {"type":"warning","content":"AI响应格式有误，使用备用方案"}\n\n'));
       const fallback = generateOptimizationSuggestions(productInfo);
-      await writer.write(new TextEncoder().encode(`data: {"type":"result","content":${JSON.stringify(fallback)}}\n\n`));
+      controller.enqueue(new TextEncoder().encode(`data: {"type":"result","content":${JSON.stringify(fallback)}}\n\n`));
       return fallback;
     }
 
   } catch (error) {
     console.error('SiliconFlow API调用失败:', error);
-    await writer.write(new TextEncoder().encode('data: {"type":"error","content":"API调用失败，使用备用方案"}\n\n'));
+    controller.enqueue(new TextEncoder().encode('data: {"type":"error","content":"API调用失败，使用备用方案"}\n\n'));
     const fallback = generateOptimizationSuggestions(productInfo);
-    await writer.write(new TextEncoder().encode(`data: {"type":"result","content":${JSON.stringify(fallback)}}\n\n`));
+    controller.enqueue(new TextEncoder().encode(`data: {"type":"result","content":${JSON.stringify(fallback)}}\n\n`));
     return fallback;
   }
 }
@@ -549,14 +549,12 @@ export async function POST(request: Request) {
       
       const stream = new ReadableStream({
         async start(controller) {
-          const writer = controller;
-          
           try {
-            await callSiliconFlowAPIWithStream(productInfo, writer);
-            await writer.write(encoder.encode('data: [DONE]\n\n'));
+            await callSiliconFlowAPIWithStream(productInfo, controller);
+            controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           } catch (error) {
             console.error('流式处理错误:', error);
-            await writer.write(encoder.encode(`data: {"type":"error","content":"处理失败: ${error instanceof Error ? error.message : '未知错误'}"}\n\n`));
+            controller.enqueue(encoder.encode(`data: {"type":"error","content":"处理失败: ${error instanceof Error ? error.message : '未知错误'}"}\n\n`));
           } finally {
             controller.close();
           }
