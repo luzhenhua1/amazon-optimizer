@@ -337,11 +337,19 @@ export default function HomePage() {
         )}
 
         {/* 结果步骤 */}
-        {currentStep === 'result' && optimizationResult && (
+        {currentStep === 'result' && (
           <OptimizationResult
-            suggestion={optimizationResult}
+            suggestion={optimizationResult || {
+              title: { original: '', optimized: '', suggestions: [] },
+              description: { original: '', optimized: '', suggestions: [] },
+              keywords: { original: [], suggested: [], analysis: '' },
+              seo: { score: 0, improvements: [] },
+              competitive: { analysis: '', recommendations: [] }
+            }}
             onExport={handleExport}
             onReset={handleNewOptimization}
+            isLoading={isLoading}
+            thinkingProgress={''} // 这里可以传递思考进度，如果需要的话
           />
         )}
       </div>
