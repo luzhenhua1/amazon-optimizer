@@ -16,7 +16,6 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { OptimizationSuggestion } from '@/types';
-import { Progress } from '@/components/ui/progress';
 
 interface OptimizationResultProps {
   suggestion: OptimizationSuggestion;
@@ -49,7 +48,7 @@ export function OptimizationResult({
                 <div className="absolute inset-0 w-4 h-4 bg-green-400 rounded-full animate-ping"></div>
               </div>
               <CardTitle className="text-2xl font-bold text-gray-900">
-                DeepSeek-R1 AI深度分析中
+                DeepSeek AI深度分析中
               </CardTitle>
             </div>
             <p className="text-gray-600">
@@ -58,15 +57,6 @@ export function OptimizationResult({
             </p>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* 进度条 */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">分析进度</span>
-                <span className="text-blue-600 font-medium">处理中...</span>
-              </div>
-              <Progress value={75} className="h-3" />
-            </div>
-
             {/* 思考内容区域 */}
             <div className="bg-white/70 rounded-lg p-6 border border-gray-200/50">
               <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
@@ -74,7 +64,7 @@ export function OptimizationResult({
                 AI思考过程
               </h4>
               <div className="text-sm text-gray-700 font-mono whitespace-pre-wrap leading-relaxed min-h-32 max-h-64 overflow-y-auto bg-gray-50 rounded p-4 border">
-                {thinkingProgress || '🚀 正在启动DeepSeek-R1推理引擎...\n🔍 加载商品分析模型...\n📋 初始化优化策略框架...'}
+                {thinkingProgress || '🚀 正在启动DeepSeek推理引擎...\n🔍 加载商品分析模型...\n📋 初始化优化策略框架...'}
               </div>
             </div>
 
@@ -89,7 +79,7 @@ export function OptimizationResult({
                 <span className="text-sm text-gray-600 font-medium">深度分析中，请稍候...</span>
               </div>
               <div className="text-xs text-gray-500 bg-white/60 px-3 py-1 rounded-full">
-                ⚡ 硅基流动 × DeepSeek-R1
+                ⚡ DeepSeek-R1
               </div>
             </div>
           </CardContent>

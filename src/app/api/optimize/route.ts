@@ -3,6 +3,9 @@ import { ApiResponse, OptimizationSuggestion, ProductInfo } from '@/types';
 
 // 生成优化建议（模拟数据）
 function generateOptimizationSuggestions(productInfo: ProductInfo): OptimizationSuggestion {
+  // 判断是否为英文市场
+  const isEnglishMarket = ['us', 'uk', 'ca', 'au'].includes(productInfo.targetMarket);
+  
   // 更真实的SEO评分计算
   let seoScore = 60; // 基础分数
   
@@ -23,8 +26,16 @@ function generateOptimizationSuggestions(productInfo: ProductInfo): Optimization
   // 确保分数在合理范围内
   seoScore = Math.min(Math.max(seoScore, 45), 88);
   
-  // 生成详细的优化建议
-  const titleSuggestions = [
+  // 根据市场生成不同语言的建议
+  const titleSuggestions = isEnglishMarket ? [
+    'Place core keywords at the beginning of title for better search ranking',
+    'Add product specifications (size, material) to enhance description',
+    'Use numbers and symbols (★, ✓) to improve visual appeal',
+    'Keep title length between 150-200 characters to avoid truncation',
+    'Include emotional words like "comfortable" or "durable"',
+    'Highlight unique selling points and differentiating features',
+    'Consider seasonal keywords and holiday marketing terms'
+  ] : [
     '在标题前置核心关键词，提升搜索排名',
     '添加产品规格参数（如尺寸、材质）增强描述性',
     '使用数字和符号（如★、✓）提升视觉吸引力',
@@ -34,7 +45,16 @@ function generateOptimizationSuggestions(productInfo: ProductInfo): Optimization
     '考虑seasonal关键词和节日营销词汇'
   ];
 
-  const descriptionSuggestions = [
+  const descriptionSuggestions = isEnglishMarket ? [
+    'Start with core selling points in first 30 words to grab attention',
+    'Use bullet points to list product features for better readability',
+    'Add usage scenarios to help customers visualize product use',
+    'Include technical specifications and product parameters',
+    'Add after-sales service commitments to build customer confidence',
+    'Use sensory words to describe product experience (touch, visual)',
+    'Include customer review highlights and recommendations',
+    'End with call-to-action to encourage immediate purchase'
+  ] : [
     '开头30字重点突出核心卖点，抓住用户注意力',
     '使用bullet points列举产品特色，提升可读性',
     '加入使用场景描述，帮助用户建立购买联想',
@@ -45,7 +65,15 @@ function generateOptimizationSuggestions(productInfo: ProductInfo): Optimization
     '结尾添加行动召唤，引导用户立即购买'
   ];
 
-  const seoImprovements = [
+  const seoImprovements = isEnglishMarket ? [
+    `Improve title keyword density, current score ${Math.round(seoScore * 0.25)}/25`,
+    `Optimize description structure and content completeness, current score ${Math.round(seoScore * 0.25)}/25`,
+    `Expand keyword coverage with long-tail keywords`,
+    `Enhance overall content quality and user experience`,
+    `Optimize image ALT tags and product variant information`,
+    `Strengthen A+ content and brand storytelling`,
+    `Improve product category selection and attribute filling`
+  ] : [
     `提升标题关键词密度，当前评分${Math.round(seoScore * 0.25)}/25分`,
     `优化描述结构和内容完整性，当前评分${Math.round(seoScore * 0.25)}/25分`,
     `扩展关键词覆盖度，增加长尾关键词`,
@@ -55,7 +83,16 @@ function generateOptimizationSuggestions(productInfo: ProductInfo): Optimization
     `改善产品类目选择和属性填写`
   ];
 
-  const competitiveRecommendations = [
+  const competitiveRecommendations = isEnglishMarket ? [
+    `Implement differentiation strategy in ${productInfo.category} category`,
+    'Highlight competitive advantages through pricing and value proposition',
+    'Strengthen product quality certifications and authority endorsements',
+    'Optimize product packaging and unboxing experience',
+    'Build brand story and emotional connections',
+    'Provide superior customer service and after-sales support',
+    'Leverage social media and influencer marketing for brand awareness',
+    'Continuously collect user feedback for rapid product iteration'
+  ] : [
     `在${productInfo.category}类目中实施差异化定位策略`,
     '通过价格优势和性价比突出竞争力',
     '加强产品质量认证和权威背书',
@@ -67,7 +104,18 @@ function generateOptimizationSuggestions(productInfo: ProductInfo): Optimization
   ];
 
   // 生成更多相关关键词
-  const additionalKeywords = [
+  const additionalKeywords = isEnglishMarket ? [
+    ...productInfo.keywords,
+    `${productInfo.category} recommended`,
+    'high quality',
+    'best value',
+    'customer favorite',
+    'fast shipping',
+    'warranty included',
+    `${productInfo.targetMarket} bestseller`,
+    'limited time offer',
+    'new arrival'
+  ].slice(0, 15) : [
     ...productInfo.keywords,
     `${productInfo.category}推荐`,
     '高品质',
@@ -83,12 +131,28 @@ function generateOptimizationSuggestions(productInfo: ProductInfo): Optimization
   return {
     title: {
       original: productInfo.title,
-      optimized: `【${productInfo.category}】${productInfo.title.substring(0, 100)} | 高品质 ${productInfo.keywords[0]} | ${productInfo.targetMarket}热销推荐`,
+      optimized: isEnglishMarket 
+        ? `${productInfo.title} | Premium Quality ${productInfo.category} | Fast Shipping | Customer Favorite`
+        : `【${productInfo.category}】${productInfo.title.substring(0, 100)} | 高品质 ${productInfo.keywords[0]} | ${productInfo.targetMarket}热销推荐`,
       suggestions: titleSuggestions.slice(0, 6)
     },
     description: {
       original: productInfo.description,
-      optimized: `🌟 【产品亮点】${productInfo.description}
+      optimized: isEnglishMarket 
+        ? `${productInfo.description}
+
+✅ Why Choose This Product:
+• Premium quality materials and construction
+• User-friendly design for optimal performance
+• Excellent value with positive customer reviews
+• Fast shipping and reliable customer service
+
+🎯 Perfect For: Daily use, professional applications, gift giving
+🔧 Specifications: Please refer to detailed product description
+💎 Quality Guarantee: Authentic products, satisfaction guaranteed
+
+Order now and experience the superior quality of this ${productInfo.category}!`
+        : `🌟 【产品亮点】${productInfo.description}
 
 ✅ 核心特色：
 • 专业${productInfo.category}，品质保证
@@ -110,7 +174,21 @@ function generateOptimizationSuggestions(productInfo: ProductInfo): Optimization
     keywords: {
       original: productInfo.keywords,
       suggested: additionalKeywords,
-      analysis: `关键词分析报告：
+      analysis: isEnglishMarket 
+        ? `Keyword Analysis Report:
+        
+🔍 Current keyword coverage analysis:
+• Primary keyword: ${productInfo.keywords[0]} (high search volume)
+• Related terms: ${productInfo.keywords.slice(1, 3).join(', ')}
+• Long-tail opportunities: Found potential in ${productInfo.category} related long-tail keywords
+
+📈 Optimization strategy recommendations:
+• Focus areas: ${productInfo.category} core vocabulary
+• Expansion directions: functional, scenario-based, emotional keywords
+• Competition strategy: Avoid high-competition terms, focus on medium and long-tail keywords
+
+🎯 Expected results: Keyword optimization expected to increase search exposure by 30-50%`
+        : `关键词分析报告：
       
 🔍 当前关键词覆盖分析：
 • 主关键词：${productInfo.keywords[0]}（搜索热度高）
@@ -129,7 +207,26 @@ function generateOptimizationSuggestions(productInfo: ProductInfo): Optimization
       improvements: seoImprovements
     },
     competitive: {
-      analysis: `${productInfo.category}市场竞争深度分析：
+      analysis: isEnglishMarket 
+        ? `${productInfo.category} Market Competition Analysis:
+
+🏪 Market Overview:
+• Competition Level: Moderate to intense
+• Major Players: Established brands dominate top positions
+• Price Range: $${Math.max(10, (productInfo.price || 50) * 0.7)}-$${(productInfo.price || 50) * 1.5}
+• Customer Needs: Focus on quality, value, and service
+
+⚡ Opportunity Identification:
+• Mid-tier market has breakthrough potential
+• Growing demand for innovative features
+• Personalized customization services underdeveloped
+• Sustainable eco-friendly concepts gaining attention
+
+🎯 Threat Analysis:
+• Price competition pressure from major brands
+• New brand influx intensifying competition
+• Rapidly changing customer demands`
+        : `${productInfo.category}市场竞争深度分析：
 
 🏪 市场现状：
 • 竞争程度：中等偏激烈
