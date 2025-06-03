@@ -13,6 +13,7 @@ export default function HomePage() {
   const [currentStep, setCurrentStep] = useState<OptimizationStep>('form');
   const [productInfo, setProductInfo] = useState<ProductInfo | null>(null);
   const [optimizationResult, setOptimizationResult] = useState<OptimizationSuggestion | null>(null);
+  const [thinkingProgress, setThinkingProgress] = useState<string>('');
 
   const handleFormSubmit = async (data: ProductFormData) => {
     setIsLoading(true);
@@ -80,6 +81,7 @@ export default function HomePage() {
     
     setIsLoading(true);
     setCurrentStep('result');
+    setThinkingProgress('');
     
     try {
       console.log('开始AI优化...');
@@ -127,7 +129,7 @@ export default function HomePage() {
               
               if (data.type === 'thinking' && data.content) {
                 accumulatedThinking += data.content;
-                // 这里不再需要更新思考内容，因为我们不使用弹窗了
+                setThinkingProgress(accumulatedThinking);
               } else if (data.type === 'result' && data.content) {
                 finalResult = data.content;
                 console.log('收到AI优化结果:', finalResult);
@@ -349,7 +351,7 @@ export default function HomePage() {
             onExport={handleExport}
             onReset={handleNewOptimization}
             isLoading={isLoading}
-            thinkingProgress={''} // 这里可以传递思考进度，如果需要的话
+            thinkingProgress={thinkingProgress}
           />
         )}
       </div>
