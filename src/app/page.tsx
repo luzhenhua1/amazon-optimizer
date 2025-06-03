@@ -14,6 +14,8 @@ export default function HomePage() {
   const [productInfo, setProductInfo] = useState<ProductInfo | null>(null);
   const [optimizationResult, setOptimizationResult] = useState<OptimizationSuggestion | null>(null);
   const [thinkingProgress, setThinkingProgress] = useState<string>('');
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
 
   const handleFormSubmit = async (data: ProductFormData) => {
     setIsLoading(true);
@@ -294,11 +296,9 @@ export default function HomePage() {
           
           {/* 微信群引流按钮 - 优雅版本 */}
           <div className="flex justify-center items-center mb-6">
-            <a 
-              href="https://i.miji.bid/2025/06/03/bc3c110b778443a4a73892c33149cd83.jpeg" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors duration-200 text-sm font-medium group"
+            <button 
+              onClick={() => setShowQRModal(true)}
+              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors duration-200 text-sm font-medium group cursor-pointer"
             >
               <svg className="w-4 h-4 text-blue-500 group-hover:text-blue-600 transition-colors" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.162 4.203 2.97 5.498.135.093.234.24.234.393 0 .047-.006.094-.019.14L2.32 18.188c-.275.906.666 1.629 1.393 1.073l2.648-2.024c.094-.072.211-.098.325-.071.344.081.7.121 1.066.121C12.552 17.287 16.443 14 16.443 9.943c0-4.055-3.891-7.343-8.691-7.343L8.691 2.188z"/>
@@ -306,7 +306,7 @@ export default function HomePage() {
               <span className="border-b border-dotted border-blue-400 group-hover:border-blue-600 transition-colors">
                 加入亚马逊交流群
               </span>
-            </a>
+            </button>
           </div>
         </div>
 
@@ -379,21 +379,144 @@ export default function HomePage() {
               <p className="flex items-center justify-center gap-2 flex-wrap">
                 <span>&copy; 2025 亚马逊商品优化助手</span>
                 <span className="hidden sm:inline">|</span>
-                <span>作者：<span className="text-blue-600 font-medium">大户爱</span></span>
+                <span>作者：
+                  <button 
+                    onClick={() => setShowContactModal(true)}
+                    className="text-blue-600 font-medium hover:text-blue-700 transition-colors cursor-pointer bg-transparent border-0 p-0 text-xs underline-offset-2 hover:underline"
+                  >
+                    大户爱
+                  </button>
+                </span>
                 <span className="hidden sm:inline">|</span>
-                <a 
-                  href="https://i.miji.bid/2025/06/03/bc3c110b778443a4a73892c33149cd83.jpeg" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-700 transition-colors border-b border-dotted border-blue-300 hover:border-blue-500"
+                <button 
+                  onClick={() => setShowQRModal(true)}
+                  className="text-blue-600 hover:text-blue-700 transition-colors border-b border-dotted border-blue-300 hover:border-blue-500 cursor-pointer bg-transparent border-t-0 border-l-0 border-r-0 p-0 text-xs"
                 >
                   交流群
-                </a>
+                </button>
               </p>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* 微信群二维码模态框 */}
+      {showQRModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full mx-auto transform transition-all">
+            {/* 模态框头部 */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">加入亚马逊交流群</h3>
+                <p className="text-sm text-gray-500 mt-1">扫码加入，一起交流亚马逊运营经验</p>
+              </div>
+              <button
+                onClick={() => setShowQRModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {/* 二维码内容 */}
+            <div className="p-6 text-center">
+              <div className="inline-block p-4 bg-gray-50 rounded-xl">
+                <img 
+                  src="/wechat.jpg"
+                  alt="微信群二维码"
+                  className="w-48 h-48 object-contain rounded-lg"
+                />
+              </div>
+              <p className="text-sm text-gray-600 mt-4">
+                使用微信扫描二维码即可加入交流群
+              </p>
+              <div className="flex items-center justify-center gap-2 mt-3 text-xs text-gray-500">
+                <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L3 7l9 5 9-5-9-5zM3 17l9 5 9-5M3 12l9 5 9-5"/>
+                </svg>
+                <span>群内分享更多运营技巧和资源</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 联系方式模态框 */}
+      {showContactModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-auto transform transition-all">
+            {/* 模态框头部 */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">联系作者</h3>
+                <p className="text-sm text-gray-500 mt-1">大户爱 - 专注亚马逊运营优化</p>
+              </div>
+              <button
+                onClick={() => setShowContactModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {/* 联系方式内容 */}
+            <div className="p-6 space-y-4">
+              {/* 微信联系方式 */}
+              <div className="flex items-center gap-4 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors">
+                <div className="flex-shrink-0">
+                  <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.162 4.203 2.97 5.498.135.093.234.24.234.393 0 .047-.006.094-.019.14L2.32 18.188c-.275.906.666 1.629 1.393 1.073l2.648-2.024c.094-.072.211-.098.325-.071.344.081.7.121 1.066.121C12.552 17.287 16.443 14 16.443 9.943c0-4.055-3.891-7.343-8.691-7.343L8.691 2.188z"/>
+                    </svg>
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-medium text-gray-900">微信号</h4>
+                  <p className="text-sm text-gray-600 font-mono">Maybeisohtoai</p>
+                </div>
+                <button 
+                  onClick={() => navigator.clipboard.writeText('Maybeisohtoai')}
+                  className="text-green-600 hover:text-green-700 transition-colors text-xs font-medium px-3 py-1 border border-green-200 rounded-lg hover:bg-green-50"
+                >
+                  复制
+                </button>
+              </div>
+
+              {/* 邮箱联系方式 */}
+              <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors">
+                <div className="flex-shrink-0">
+                  <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.83 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-medium text-gray-900">邮箱地址</h4>
+                  <p className="text-sm text-gray-600 font-mono">hellostark@foxmail.com</p>
+                </div>
+                <button 
+                  onClick={() => navigator.clipboard.writeText('hellostark@foxmail.com')}
+                  className="text-blue-600 hover:text-blue-700 transition-colors text-xs font-medium px-3 py-1 border border-blue-200 rounded-lg hover:bg-blue-50"
+                >
+                  复制
+                </button>
+              </div>
+
+              {/* 底部提示 */}
+              <div className="text-center pt-4 border-t border-gray-100">
+                <p className="text-xs text-gray-500">
+                  欢迎交流亚马逊运营相关问题和建议
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
