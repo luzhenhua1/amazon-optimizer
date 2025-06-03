@@ -11,33 +11,103 @@ import {
   Target, 
   Download,
   CheckCircle,
-  RotateCcw
+  RotateCcw,
+  Lightbulb,
+  ArrowRight
 } from 'lucide-react';
 import { OptimizationSuggestion } from '@/types';
+import { Progress } from '@/components/ui/progress';
 
 interface OptimizationResultProps {
   suggestion: OptimizationSuggestion;
   onExport?: (format: 'pdf' | 'txt' | 'json') => void;
   onReset?: () => void;
+  isLoading?: boolean;
+  thinkingProgress?: string;
 }
 
 export function OptimizationResult({ 
   suggestion, 
   onExport, 
-  onReset 
+  onReset, 
+  isLoading = false,
+  thinkingProgress = ''
 }: OptimizationResultProps) {
   const [activeTab, setActiveTab] = useState('overview');
+  const [exportFormat, setExportFormat] = useState<'pdf' | 'txt' | 'json'>('pdf');
+
+  // 如果正在加载，显示AI思考状态
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-6xl mx-auto space-y-6">
+        {/* AI思考过程卡片 */}
+        <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
+          <CardHeader className="text-center">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="relative">
+                <div className="w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
+                <div className="absolute inset-0 w-4 h-4 bg-green-400 rounded-full animate-ping"></div>
+              </div>
+              <CardTitle className="text-2xl font-bold text-gray-900">
+                DeepSeek-R1 AI Analysis in Progress
+              </CardTitle>
+            </div>
+            <p className="text-gray-600">
+              🧠 AI is analyzing your product information using advanced machine learning models<br/>
+              📊 Multi-dimensional evaluation: SEO optimization, competitive analysis, keyword strategy, user experience
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* 进度条 */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Analysis Progress</span>
+                <span className="text-blue-600 font-medium">Processing...</span>
+              </div>
+              <Progress value={75} className="h-3" />
+            </div>
+
+            {/* 思考内容区域 */}
+            <div className="bg-white/70 rounded-lg p-6 border border-gray-200/50">
+              <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                <Lightbulb className="w-5 h-5 text-blue-600" />
+                AI Thinking Process
+              </h4>
+              <div className="text-sm text-gray-700 font-mono whitespace-pre-wrap leading-relaxed min-h-32 max-h-64 overflow-y-auto bg-gray-50 rounded p-4 border">
+                {thinkingProgress || '🚀 Starting DeepSeek-R1 reasoning engine...\n🔍 Loading product analysis models...\n📋 Initializing optimization strategy framework...'}
+              </div>
+            </div>
+
+            {/* 状态指示器 */}
+            <div className="flex items-center justify-between p-4 bg-white/50 rounded-lg border border-gray-200/50">
+              <div className="flex items-center gap-3">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                  <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                </div>
+                <span className="text-sm text-gray-600 font-medium">Deep analysis in progress, please wait...</span>
+              </div>
+              <div className="text-xs text-gray-500 bg-white/60 px-3 py-1 rounded-full">
+                ⚡ SiliconFlow × DeepSeek-R1
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const getSEOScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600 bg-green-100';
-    if (score >= 60) return 'text-yellow-600 bg-yellow-100';
-    return 'text-red-600 bg-red-100';
+    if (score >= 85) return 'text-green-600';
+    if (score >= 70) return 'text-yellow-600';
+    return 'text-red-600';
   };
 
-  const getSEOScoreText = (score: number) => {
-    if (score >= 80) return '优秀';
-    if (score >= 60) return '良好';
-    return '需要改进';
+  const getSEOScoreGradient = (score: number) => {
+    if (score >= 85) return 'from-green-500 to-emerald-500';
+    if (score >= 70) return 'from-yellow-500 to-orange-500';
+    return 'from-red-500 to-pink-500';
   };
 
   return (
@@ -52,7 +122,7 @@ export function OptimizationResult({
             </div>
             <div className="flex items-center gap-2">
               <Badge className={getSEOScoreColor(suggestion.seo.score)}>
-                SEO分数: {suggestion.seo.score}/100 - {getSEOScoreText(suggestion.seo.score)}
+                SEO分数: {suggestion.seo.score}/100 - {getSEOScoreGradient(suggestion.seo.score)}
               </Badge>
             </div>
           </CardTitle>

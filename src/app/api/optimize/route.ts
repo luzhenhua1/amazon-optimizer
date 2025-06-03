@@ -162,85 +162,105 @@ async function callSiliconFlowAPIWithStream(productInfo: ProductInfo, controller
   }
 
   try {
-    const prompt = `你是一位拥有10年经验的亚马逊店铺优化专家和SEO专家。请深入分析以下商品信息，并提供专业的优化建议。
+    const prompt = `You are a professional Amazon store optimization expert and SEO specialist with 10 years of experience. Please analyze the following product information and provide professional optimization suggestions.
 
-【商品信息】
-标题：${productInfo.title}
-描述：${productInfo.description}
-现有关键词：${productInfo.keywords.join(', ')}
-商品分类：${productInfo.category}
-目标市场：${productInfo.targetMarket}
-价格：$${productInfo.price || 'N/A'}
-当前评分：${productInfo.rating || 'N/A'}/5
+【Product Information】
+Title: ${productInfo.title}
+Description: ${productInfo.description}
+Current Keywords: ${productInfo.keywords.join(', ')}
+Product Category: ${productInfo.category}
+Target Market: ${productInfo.targetMarket}
+Price: $${productInfo.price || 'N/A'}
+Current Rating: ${productInfo.rating || 'N/A'}/5
 
-【分析要求】
-请按以下步骤进行深度分析：
+【Target Market Context】
+Target Market: ${productInfo.targetMarket.toUpperCase()}
+Language Requirement: ${['us', 'uk', 'ca', 'au'].includes(productInfo.targetMarket) ? 'English only - NO Chinese characters or phrases' : 'Chinese preferred'}
+Market Characteristics: ${productInfo.targetMarket === 'us' ? 'US market - focus on convenience, value, and quality' : 
+                         productInfo.targetMarket === 'uk' ? 'UK market - emphasize quality, reliability, and service' :
+                         productInfo.targetMarket === 'ca' ? 'Canadian market - highlight durability, value, and customer service' :
+                         productInfo.targetMarket === 'au' ? 'Australian market - focus on quality, practicality, and fast shipping' :
+                         productInfo.targetMarket === 'de' ? 'German market - emphasize engineering quality, precision, and efficiency' :
+                         productInfo.targetMarket === 'fr' ? 'French market - highlight elegance, quality, and user experience' :
+                         productInfo.targetMarket === 'jp' ? 'Japanese market - focus on precision, quality, and attention to detail' :
+                         'International market - focus on universal appeal and quality'}
 
-1. 【标题优化分析】
-- 分析当前标题的优缺点
-- 识别缺失的重要关键词
-- 考虑Amazon算法偏好（A9算法）
-- 重写一个更优的标题（控制在200字符内）
-- 提供5-8个具体的优化建议
+【Analysis Requirements】
+Please conduct in-depth analysis following these steps:
 
-2. 【描述优化分析】
-- 分析当前描述的结构和内容
-- 识别缺失的卖点和特性
-- 考虑用户购买决策因素
-- 重写描述，包含：产品核心卖点、使用场景、规格参数、服务承诺
-- 提供5-8个描述改进建议
+1. 【Title Optimization Analysis】
+- Analyze current title strengths and weaknesses
+- Identify missing important keywords
+- Consider Amazon A9 algorithm preferences
+- Rewrite an optimized title (keep under 200 characters)
+- Provide 5-8 specific optimization suggestions
+- IMPORTANT: For English markets (US, UK, CA, AU), use ONLY English. NO Chinese characters.
 
-3. 【关键词策略分析】
-- 分析当前关键词的搜索价值
-- 研究该品类的高价值关键词
-- 识别长尾关键词机会
-- 推荐15-20个高质量关键词
-- 提供关键词布局策略
+2. 【Description Optimization Analysis】
+- Analyze current description structure and content
+- Identify missing selling points and features
+- Consider customer purchase decision factors
+- Rewrite description including: core selling points, usage scenarios, specifications, service commitments
+- Provide 5-8 description improvement suggestions
+- IMPORTANT: Match the language to the target market
 
-4. 【SEO评分评估】
-基于以下标准给出真实评分（1-100分）：
-- 标题关键词密度和相关性（25分）
-- 描述质量和完整性（25分）
-- 关键词策略和覆盖度（25分）
-- 整体内容质量和用户体验（25分）
-评分要严格按照实际情况，优秀产品通常在75-90分之间
+3. 【Keyword Strategy Analysis】
+- Analyze current keywords' search value
+- Research high-value keywords for this category
+- Identify long-tail keyword opportunities
+- Recommend 15-20 high-quality keywords
+- Provide keyword placement strategy
+- IMPORTANT: Keywords must match target market language
 
-5. 【竞争分析】
-- 分析该品类的竞争程度
-- 识别差异化机会
-- 提供市场定位建议
-- 给出5-8个具体的竞争策略
+4. 【SEO Score Assessment】
+Rate based on these criteria (1-100 points):
+- Title keyword density and relevance (25 points)
+- Description quality and completeness (25 points)
+- Keyword strategy and coverage (25 points)
+- Overall content quality and user experience (25 points)
+Rate strictly based on actual conditions, excellent products typically score 75-90
 
-【输出格式要求】
-请严格按照以下JSON格式输出，确保内容详实专业：
+5. 【Competitive Analysis】
+- Analyze competition level in this category
+- Identify differentiation opportunities
+- Provide market positioning suggestions
+- Give 5-8 specific competitive strategies
+
+【Output Format Requirements】
+Please output strictly in the following JSON format, ensuring content is detailed and professional:
 
 {
   "title": {
-    "original": "原始标题",
-    "optimized": "优化后的标题",
-    "suggestions": ["建议1", "建议2", "建议3", "建议4", "建议5"]
+    "original": "Original title",
+    "optimized": "Optimized title (matching target market language)",
+    "suggestions": ["Suggestion 1", "Suggestion 2", "Suggestion 3", "Suggestion 4", "Suggestion 5"]
   },
   "description": {
-    "original": "原始描述",
-    "optimized": "优化后的描述（包含特色、卖点、规格等）",
-    "suggestions": ["建议1", "建议2", "建议3", "建议4", "建议5"]
+    "original": "Original description",
+    "optimized": "Optimized description (including features, selling points, specifications, etc.)",
+    "suggestions": ["Suggestion 1", "Suggestion 2", "Suggestion 3", "Suggestion 4", "Suggestion 5"]
   },
   "keywords": {
-    "original": ["现有关键词"],
-    "suggested": ["推荐关键词1", "推荐关键词2", ...],
-    "analysis": "详细的关键词分析和策略说明"
+    "original": ["Current keywords"],
+    "suggested": ["Recommended keyword 1", "Recommended keyword 2", ...],
+    "analysis": "Detailed keyword analysis and strategy explanation"
   },
   "seo": {
-    "score": 实际评分数字,
-    "improvements": ["改进建议1", "改进建议2", "改进建议3", "改进建议4", "改进建议5"]
+    "score": actual_score_number,
+    "improvements": ["Improvement 1", "Improvement 2", "Improvement 3", "Improvement 4", "Improvement 5"]
   },
   "competitive": {
-    "analysis": "详细的竞争环境分析",
-    "recommendations": ["策略1", "策略2", "策略3", "策略4", "策略5"]
+    "analysis": "Detailed competitive environment analysis",
+    "recommendations": ["Strategy 1", "Strategy 2", "Strategy 3", "Strategy 4", "Strategy 5"]
   }
 }
 
-请确保你的分析是基于真实的电商和SEO经验，提供的建议要具体可执行，评分要客观准确。`;
+CRITICAL REQUIREMENTS:
+- For English markets (US, UK, CA, AU): Use ONLY English in ALL fields
+- For non-English markets: Use appropriate local language
+- Ensure all suggestions are specific and actionable
+- Provide objective and accurate scoring
+- Base analysis on real e-commerce and SEO experience`;
 
     controller.enqueue(new TextEncoder().encode('data: {"type":"thinking","content":"🔍 开始深度分析商品信息..."}\n\n'));
 
@@ -393,38 +413,105 @@ async function callSiliconFlowAPI(productInfo: ProductInfo): Promise<Optimizatio
   }
 
   try {
-    const prompt = `作为专业的亚马逊店铺优化专家，请为以下商品提供全面的优化建议：
+    const prompt = `You are a professional Amazon store optimization expert and SEO specialist with 10 years of experience. Please analyze the following product information and provide professional optimization suggestions.
 
-商品信息：
-- 标题：${productInfo.title}
-- 描述：${productInfo.description}
-- 关键词：${productInfo.keywords.join(', ')}
-- 分类：${productInfo.category}
-- 目标市场：${productInfo.targetMarket}
+【Product Information】
+Title: ${productInfo.title}
+Description: ${productInfo.description}
+Current Keywords: ${productInfo.keywords.join(', ')}
+Product Category: ${productInfo.category}
+Target Market: ${productInfo.targetMarket}
+Price: $${productInfo.price || 'N/A'}
+Current Rating: ${productInfo.rating || 'N/A'}/5
 
-请提供详细的优化建议，包括：
+【Target Market Context】
+Target Market: ${productInfo.targetMarket.toUpperCase()}
+Language Requirement: ${['us', 'uk', 'ca', 'au'].includes(productInfo.targetMarket) ? 'English only - NO Chinese characters or phrases' : 'Chinese preferred'}
+Market Characteristics: ${productInfo.targetMarket === 'us' ? 'US market - focus on convenience, value, and quality' : 
+                         productInfo.targetMarket === 'uk' ? 'UK market - emphasize quality, reliability, and service' :
+                         productInfo.targetMarket === 'ca' ? 'Canadian market - highlight durability, value, and customer service' :
+                         productInfo.targetMarket === 'au' ? 'Australian market - focus on quality, practicality, and fast shipping' :
+                         productInfo.targetMarket === 'de' ? 'German market - emphasize engineering quality, precision, and efficiency' :
+                         productInfo.targetMarket === 'fr' ? 'French market - highlight elegance, quality, and user experience' :
+                         productInfo.targetMarket === 'jp' ? 'Japanese market - focus on precision, quality, and attention to detail' :
+                         'International market - focus on universal appeal and quality'}
 
-1. 标题优化：
-   - 重写一个更有吸引力的标题
-   - 提供3-5个具体的优化建议
+【Analysis Requirements】
+Please conduct in-depth analysis following these steps:
 
-2. 描述优化：
-   - 重写商品描述，使其更具销售力
-   - 提供3-5个改进建议
+1. 【Title Optimization Analysis】
+- Analyze current title strengths and weaknesses
+- Identify missing important keywords
+- Consider Amazon A9 algorithm preferences
+- Rewrite an optimized title (keep under 200 characters)
+- Provide 5-8 specific optimization suggestions
+- IMPORTANT: For English markets (US, UK, CA, AU), use ONLY English. NO Chinese characters.
 
-3. 关键词优化：
-   - 推荐10-15个相关关键词
-   - 分析当前关键词的优缺点
+2. 【Description Optimization Analysis】
+- Analyze current description structure and content
+- Identify missing selling points and features
+- Consider customer purchase decision factors
+- Rewrite description including: core selling points, usage scenarios, specifications, service commitments
+- Provide 5-8 description improvement suggestions
+- IMPORTANT: Match the language to the target market
 
-4. SEO评分和改进建议：
-   - 给出1-100的SEO评分
-   - 提供5-6个具体的SEO改进建议
+3. 【Keyword Strategy Analysis】
+- Analyze current keywords' search value
+- Research high-value keywords for this category
+- Identify long-tail keyword opportunities
+- Recommend 15-20 high-quality keywords
+- Provide keyword placement strategy
+- IMPORTANT: Keywords must match target market language
 
-5. 竞品分析：
-   - 分析该品类的市场竞争情况
-   - 提供5-6个竞争策略建议
+4. 【SEO Score Assessment】
+Rate based on these criteria (1-100 points):
+- Title keyword density and relevance (25 points)
+- Description quality and completeness (25 points)
+- Keyword strategy and coverage (25 points)
+- Overall content quality and user experience (25 points)
+Rate strictly based on actual conditions, excellent products typically score 75-90
 
-请以JSON格式返回，确保格式正确且包含所有必要字段。`;
+5. 【Competitive Analysis】
+- Analyze competition level in this category
+- Identify differentiation opportunities
+- Provide market positioning suggestions
+- Give 5-8 specific competitive strategies
+
+【Output Format Requirements】
+Please output strictly in the following JSON format, ensuring content is detailed and professional:
+
+{
+  "title": {
+    "original": "Original title",
+    "optimized": "Optimized title (matching target market language)",
+    "suggestions": ["Suggestion 1", "Suggestion 2", "Suggestion 3", "Suggestion 4", "Suggestion 5"]
+  },
+  "description": {
+    "original": "Original description",
+    "optimized": "Optimized description (including features, selling points, specifications, etc.)",
+    "suggestions": ["Suggestion 1", "Suggestion 2", "Suggestion 3", "Suggestion 4", "Suggestion 5"]
+  },
+  "keywords": {
+    "original": ["Current keywords"],
+    "suggested": ["Recommended keyword 1", "Recommended keyword 2", ...],
+    "analysis": "Detailed keyword analysis and strategy explanation"
+  },
+  "seo": {
+    "score": actual_score_number,
+    "improvements": ["Improvement 1", "Improvement 2", "Improvement 3", "Improvement 4", "Improvement 5"]
+  },
+  "competitive": {
+    "analysis": "Detailed competitive environment analysis",
+    "recommendations": ["Strategy 1", "Strategy 2", "Strategy 3", "Strategy 4", "Strategy 5"]
+  }
+}
+
+CRITICAL REQUIREMENTS:
+- For English markets (US, UK, CA, AU): Use ONLY English in ALL fields
+- For non-English markets: Use appropriate local language
+- Ensure all suggestions are specific and actionable
+- Provide objective and accurate scoring
+- Base analysis on real e-commerce and SEO experience`;
 
     const response = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
       method: 'POST',

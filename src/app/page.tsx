@@ -109,77 +109,6 @@ export default function HomePage() {
       let finalResult = null;
       const decoder = new TextDecoder();
 
-      // 创建思考过程的显示容器
-      const thinkingOverlay = document.createElement('div');
-      thinkingOverlay.className = 'fixed inset-0 bg-gradient-to-br from-gray-900/95 via-blue-900/90 to-indigo-900/95 backdrop-blur-md z-50 flex items-center justify-center p-4';
-      thinkingOverlay.innerHTML = `
-        <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden border border-white/20 animate-in fade-in-0 zoom-in-95 duration-300">
-          <div class="relative">
-            <!-- 头部渐变背景 -->
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 opacity-90"></div>
-            <div class="relative p-8 text-white">
-              <div class="flex items-center gap-4 mb-4">
-                <div class="relative">
-                  <div class="w-4 h-4 bg-green-400 rounded-full animate-pulse shadow-lg"></div>
-                  <div class="absolute inset-0 w-4 h-4 bg-green-400 rounded-full animate-ping"></div>
-                </div>
-                <h3 class="font-bold text-2xl">DeepSeek-R1 深度推理引擎</h3>
-                <div class="ml-auto text-sm bg-white/20 px-3 py-1 rounded-full">
-                  实时思考中...
-                </div>
-              </div>
-              <p class="text-blue-100 text-base leading-relaxed">
-                🧠 AI正在运用深度学习模型分析您的商品信息<br>
-                📊 多维度评估：SEO优化、竞争分析、关键词策略、用户体验
-              </p>
-              
-              <!-- 进度指示器 -->
-              <div class="mt-4 flex items-center gap-2">
-                <div class="flex-1 bg-white/20 rounded-full h-2 overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-green-400 to-blue-400 rounded-full animate-pulse" style="width: 100%"></div>
-                </div>
-                <span class="text-sm font-medium">分析中</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- 思考内容区域 -->
-          <div class="p-8 max-h-96 overflow-y-auto bg-gray-50/50">
-            <div class="mb-4">
-              <h4 class="font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                </svg>
-                AI思考过程
-              </h4>
-            </div>
-            <div id="thinking-content" class="text-sm text-gray-700 font-mono whitespace-pre-wrap leading-relaxed bg-white/70 rounded-lg p-4 border border-gray-200/50 min-h-32">
-              🚀 正在启动DeepSeek-R1推理引擎...\n🔍 加载商品分析模型...\n📋 初始化优化策略框架...
-            </div>
-          </div>
-          
-          <!-- 底部状态栏 -->
-          <div class="px-8 py-6 bg-gradient-to-r from-gray-50 to-blue-50/30 border-t border-gray-200/50">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <div class="flex space-x-1">
-                  <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
-                  <div class="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                  <div class="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                </div>
-                <span class="text-sm text-gray-600 font-medium">深度推理中，请稍候...</span>
-              </div>
-              <div class="text-xs text-gray-500 bg-white/60 px-3 py-1 rounded-full">
-                ⚡ 硅基流动 × DeepSeek-R1
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(thinkingOverlay);
-
-      const thinkingContent = document.getElementById('thinking-content');
-
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -198,10 +127,7 @@ export default function HomePage() {
               
               if (data.type === 'thinking' && data.content) {
                 accumulatedThinking += data.content;
-                if (thinkingContent) {
-                  thinkingContent.textContent = accumulatedThinking;
-                  thinkingContent.scrollTop = thinkingContent.scrollHeight;
-                }
+                // 这里不再需要更新思考内容，因为我们不使用弹窗了
               } else if (data.type === 'result' && data.content) {
                 finalResult = data.content;
                 console.log('收到AI优化结果:', finalResult);
@@ -211,10 +137,7 @@ export default function HomePage() {
                 console.log('收到内容流:', data.content);
               } else if (data.type === 'processing' && data.content) {
                 // 处理状态更新
-                if (thinkingContent) {
-                  thinkingContent.textContent = accumulatedThinking + '\n\n' + data.content;
-                  thinkingContent.scrollTop = thinkingContent.scrollHeight;
-                }
+                console.log('处理状态:', data.content);
               } else if (data.type === 'error') {
                 console.error('AI处理错误:', data.content);
                 throw new Error(data.content || 'AI处理失败');
@@ -230,31 +153,27 @@ export default function HomePage() {
         if (finalResult) break;
       }
 
-      // 移除思考过程覆盖层
-      if (document.body.contains(thinkingOverlay)) {
-        // 添加消失动画
-        thinkingOverlay.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
-        thinkingOverlay.style.opacity = '0';
-        thinkingOverlay.style.transform = 'scale(0.95)';
-        
-        setTimeout(() => {
-          if (document.body.contains(thinkingOverlay)) {
-            document.body.removeChild(thinkingOverlay);
-          }
-        }, 500);
-      }
-
       if (finalResult) {
         console.log('设置AI优化结果:', finalResult);
         setOptimizationResult(finalResult);
       } else {
         console.warn('未收到AI优化结果，使用备用数据');
-        // 如果没有收到结果，生成一个基本的优化建议
+        // 生成符合目标市场的备用优化建议
+        const isEnglishMarket = ['us', 'uk', 'ca', 'au'].includes(productInfo.targetMarket);
+        
         const basicOptimization = {
           title: {
             original: productInfo.title,
-            optimized: `【优化版】${productInfo.title} - 专业品质推荐`,
-            suggestions: [
+            optimized: isEnglishMarket 
+              ? `${productInfo.title} | Premium Quality | Fast Shipping`
+              : `【优质推荐】${productInfo.title}`,
+            suggestions: isEnglishMarket ? [
+              'Add key features and specifications to the title',
+              'Include emotional triggers like "Premium" or "Professional"',
+              'Optimize title length for better search visibility',
+              'Highlight unique selling points',
+              'Include relevant keywords for better SEO'
+            ] : [
               '在标题中添加核心关键词提升搜索排名',
               '使用情感化词汇增强购买欲望',
               '添加产品特色和卖点描述',
@@ -264,8 +183,16 @@ export default function HomePage() {
           },
           description: {
             original: productInfo.description,
-            optimized: `${productInfo.description}\n\n✅ 专业推荐理由：\n• 优质材料，品质保证\n• 人性化设计，使用便捷\n• 性价比高，用户好评如潮\n• 完善售后，购买无忧`,
-            suggestions: [
+            optimized: isEnglishMarket 
+              ? `${productInfo.description}\n\n✅ Why Choose This Product:\n• Premium quality materials and construction\n• User-friendly design for optimal performance\n• Excellent value with positive customer reviews\n• Fast shipping and reliable customer service`
+              : `${productInfo.description}\n\n✅ 专业推荐理由：\n• 优质材料，品质保证\n• 人性化设计，使用便捷\n• 性价比高，用户好评如潮\n• 完善售后，购买无忧`,
+            suggestions: isEnglishMarket ? [
+              'Highlight key product benefits and features',
+              'Add usage scenarios and applications',
+              'Include warranty and customer service information',
+              'Use bullet points for better readability',
+              'Add customer testimonials and social proof'
+            ] : [
               '增加产品核心卖点说明',
               '添加使用场景描述',
               '强化服务承诺和保障',
@@ -275,12 +202,22 @@ export default function HomePage() {
           },
           keywords: {
             original: productInfo.keywords,
-            suggested: [...productInfo.keywords, '高品质', '性价比', '专业推荐', '用户好评', '快速发货'],
-            analysis: '关键词分析：当前关键词覆盖基础需求，建议增加长尾关键词和情感词汇以提升搜索匹配度和转化率。'
+            suggested: isEnglishMarket 
+              ? [...productInfo.keywords, 'premium quality', 'best value', 'professional grade', 'customer favorite', 'fast shipping']
+              : [...productInfo.keywords, '高品质', '性价比', '专业推荐', '用户好评', '快速发货'],
+            analysis: isEnglishMarket 
+              ? 'Keyword Analysis: Current keywords cover basic needs. Recommend adding long-tail keywords and emotional triggers to improve search visibility and conversion rates.'
+              : '关键词分析：当前关键词覆盖基础需求，建议增加长尾关键词和情感词汇以提升搜索匹配度和转化率。'
           },
           seo: {
             score: 78,
-            improvements: [
+            improvements: isEnglishMarket ? [
+              'Optimize title keyword density',
+              'Enhance description content completeness',
+              'Expand related keyword coverage',
+              'Improve page user experience',
+              'Strengthen product image optimization'
+            ] : [
               '优化标题关键词密度',
               '增强描述内容完整性',
               '扩展相关关键词覆盖',
@@ -289,8 +226,16 @@ export default function HomePage() {
             ]
           },
           competitive: {
-            analysis: `${productInfo.category}市场竞争分析：该类目竞争适中，有优化空间。`,
-            recommendations: [
+            analysis: isEnglishMarket 
+              ? `${productInfo.category} market analysis: This category shows moderate competition with room for optimization.`
+              : `${productInfo.category}市场竞争分析：该类目竞争适中，有优化空间。`,
+            recommendations: isEnglishMarket ? [
+              'Strengthen product differentiation points',
+              'Optimize pricing strategy',
+              'Improve customer service quality',
+              'Enhance brand building',
+              'Continuously optimize user experience'
+            ] : [
               '强化产品差异化卖点',
               '优化价格策略',
               '提升客户服务质量',
