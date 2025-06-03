@@ -89,7 +89,10 @@ export default function HomePage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ productInfo }),
+        body: JSON.stringify({ 
+          productInfo,
+          stream: true // 启用流式响应
+        }),
       });
 
       if (!response.ok) {
@@ -102,8 +105,42 @@ export default function HomePage() {
         throw new Error('无法读取响应流');
       }
 
-      let accumulatedResult = '';
+      let accumulatedThinking = '';
+      let finalResult = null;
       const decoder = new TextDecoder();
+
+      // 创建思考过程的显示容器
+      const thinkingOverlay = document.createElement('div');
+      thinkingOverlay.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center';
+      thinkingOverlay.innerHTML = `
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden">
+          <div class="p-6 border-b bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+            <div class="flex items-center gap-3">
+              <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+              <h3 class="font-semibold text-lg">DeepSeek-R1 正在深度思考</h3>
+            </div>
+            <p class="text-blue-100 text-sm mt-1">AI正在分析您的商品信息，生成专业优化建议...</p>
+          </div>
+          <div class="p-6 max-h-96 overflow-y-auto">
+            <div id="thinking-content" class="text-sm text-gray-700 font-mono whitespace-pre-wrap leading-relaxed">
+              🤔 正在启动DeepSeek-R1推理引擎...
+            </div>
+          </div>
+          <div class="p-4 border-t bg-gray-50 text-center">
+            <div class="flex items-center justify-center gap-2 text-xs text-gray-500">
+              <div class="flex space-x-1">
+                <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+                <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+              </div>
+              <span>深度推理中，请稍候...</span>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(thinkingOverlay);
+
+      const thinkingContent = document.getElementById('thinking-content');
 
       while (true) {
         const { done, value } = await reader.read();
@@ -116,9 +153,16 @@ export default function HomePage() {
           if (line.startsWith('data: ')) {
             try {
               const data = JSON.parse(line.slice(6));
-              if (data.content) {
-                accumulatedResult += data.content;
-                // 这里需要更合适的处理方式，暂时设置为null，等待完整结果
+              
+              if (data.type === 'thinking' && data.content) {
+                accumulatedThinking += data.content;
+                if (thinkingContent) {
+                  thinkingContent.textContent = accumulatedThinking;
+                  thinkingContent.scrollTop = thinkingContent.scrollHeight;
+                }
+              } else if (data.type === 'result' && data.content) {
+                finalResult = data.content;
+                break;
               }
             } catch {
               // 忽略JSON解析错误
@@ -127,34 +171,17 @@ export default function HomePage() {
         }
       }
 
-      // 创建一个基本的优化结果结构
-      const basicOptimization: OptimizationSuggestion = {
-        title: {
-          original: productInfo.title,
-          optimized: productInfo.title,
-          suggestions: ['AI优化完成']
-        },
-        description: {
-          original: productInfo.description,
-          optimized: accumulatedResult || productInfo.description,
-          suggestions: ['AI优化完成']
-        },
-        keywords: {
-          original: productInfo.keywords,
-          suggested: productInfo.keywords,
-          analysis: 'AI分析完成'
-        },
-        seo: {
-          score: 85,
-          improvements: ['SEO优化完成']
-        },
-        competitive: {
-          analysis: accumulatedResult || 'AI分析完成',
-          recommendations: ['竞争分析完成']
-        }
-      };
+      // 移除思考过程覆盖层
+      setTimeout(() => {
+        document.body.removeChild(thinkingOverlay);
+      }, 1000);
 
-      setOptimizationResult(basicOptimization);
+      if (finalResult) {
+        setOptimizationResult(finalResult);
+      } else {
+        throw new Error('未收到AI优化结果');
+      }
+
       console.log('AI优化完成');
     } catch (error) {
       console.error('优化错误:', error);

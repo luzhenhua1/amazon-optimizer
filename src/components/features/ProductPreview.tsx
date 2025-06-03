@@ -123,10 +123,6 @@ export function ProductPreview({ productInfo, onProceed, onEdit }: ProductPrevie
                 <Star className="h-4 w-4 text-yellow-600" />
                 <span className="font-medium">{formatRating(productInfo.rating)}</span>
               </div>
-              <div className="flex items-center gap-2 p-2 bg-green-50 rounded col-span-2">
-                <MessageCircle className="h-4 w-4 text-green-600" />
-                <span className="font-medium">{formatReviews(productInfo.reviews)}</span>
-              </div>
             </div>
           </div>
 
