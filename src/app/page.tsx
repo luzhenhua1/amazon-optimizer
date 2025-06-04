@@ -86,82 +86,151 @@ export default function HomePage() {
     setThinkingProgress('');
     
     try {
-      console.log('开始AI优化...');
+      console.log('开始分模块AI优化...');
       
-      const response = await fetch('/api/optimize', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          productInfo,
-          stream: true // 启用流式响应
-        }),
-      });
+      // 初始化优化结果
+      let titleResult = null;
+      let descriptionResult = null;
+      let keywordsResult = null;
+      let seoResult = null;
+      let competitiveResult = null;
+      
+      // 步骤1：标题优化
+      setThinkingProgress('🎯 正在优化商品标题...');
+      try {
+        const titleResponse = await fetch('/api/optimize-title', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productInfo }),
+        });
 
-      if (!response.ok) {
-        throw new Error('优化请求失败');
-      }
-
-      // 处理流式响应
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error('无法读取响应流');
-      }
-
-      let accumulatedThinking = '';
-      let finalResult = null;
-      const decoder = new TextDecoder();
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const dataStr = line.slice(6).trim();
-            if (dataStr === '[DONE]') break;
-            if (!dataStr) continue;
-            
-            try {
-              const data = JSON.parse(dataStr);
-              
-              if (data.type === 'thinking' && data.content) {
-                accumulatedThinking += data.content;
-                setThinkingProgress(accumulatedThinking);
-              } else if (data.type === 'result' && data.content) {
-                finalResult = data.content;
-                console.log('收到AI优化结果:', finalResult);
-                break;
-              } else if (data.type === 'content' && data.content) {
-                // 处理内容流
-                console.log('收到内容流:', data.content);
-              } else if (data.type === 'processing' && data.content) {
-                // 处理状态更新
-                console.log('处理状态:', data.content);
-              } else if (data.type === 'error') {
-                console.error('AI处理错误:', data.content);
-                throw new Error(data.content || 'AI处理失败');
-              }
-            } catch (parseError) {
-              console.warn('解析流式数据失败:', parseError, '原始数据:', dataStr);
-              // 忽略JSON解析错误，继续处理
-            }
+        if (titleResponse.ok) {
+          const titleData = await titleResponse.json();
+          if (titleData.success) {
+            titleResult = titleData.data;
+            setThinkingProgress('✅ 标题优化完成\n🔍 正在优化商品描述...');
+          } else {
+            throw new Error(titleData.error || '标题优化失败');
           }
+        } else {
+          throw new Error('标题优化请求失败');
         }
-        
-        // 如果已经收到结果，退出循环
-        if (finalResult) break;
+      } catch (error) {
+        console.error('标题优化失败:', error);
+        throw new Error('标题优化失败: ' + (error instanceof Error ? error.message : '未知错误'));
       }
 
-      if (finalResult) {
-        console.log('设置AI优化结果:', finalResult);
-        setOptimizationResult(finalResult);
+      // 步骤2：描述优化
+      try {
+        const descResponse = await fetch('/api/optimize-desc', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productInfo }),
+        });
+
+        if (descResponse.ok) {
+          const descData = await descResponse.json();
+          if (descData.success) {
+            descriptionResult = descData.data;
+            setThinkingProgress('✅ 标题优化完成\n✅ 描述优化完成\n🏷️ 正在优化关键词...');
+          } else {
+            throw new Error(descData.error || '描述优化失败');
+          }
+        } else {
+          throw new Error('描述优化请求失败');
+        }
+      } catch (error) {
+        console.error('描述优化失败:', error);
+        throw new Error('描述优化失败: ' + (error instanceof Error ? error.message : '未知错误'));
+      }
+
+      // 步骤3：关键词优化
+      try {
+        const keywordsResponse = await fetch('/api/optimize-keywords', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productInfo }),
+        });
+
+        if (keywordsResponse.ok) {
+          const keywordsData = await keywordsResponse.json();
+          if (keywordsData.success) {
+            keywordsResult = keywordsData.data;
+            setThinkingProgress('✅ 标题优化完成\n✅ 描述优化完成\n✅ 关键词优化完成\n📊 正在分析SEO表现...');
+          } else {
+            throw new Error(keywordsData.error || '关键词优化失败');
+          }
+        } else {
+          throw new Error('关键词优化请求失败');
+        }
+      } catch (error) {
+        console.error('关键词优化失败:', error);
+        throw new Error('关键词优化失败: ' + (error instanceof Error ? error.message : '未知错误'));
+      }
+
+      // 步骤4：SEO分析
+      try {
+        const seoResponse = await fetch('/api/optimize-seo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productInfo, titleResult, descriptionResult, keywordsResult }),
+        });
+
+        if (seoResponse.ok) {
+          const seoData = await seoResponse.json();
+          if (seoData.success) {
+            seoResult = seoData.data;
+            setThinkingProgress('✅ 标题优化完成\n✅ 描述优化完成\n✅ 关键词优化完成\n✅ SEO分析完成\n🏆 正在分析竞争环境...');
+          } else {
+            throw new Error(seoData.error || 'SEO分析失败');
+          }
+        } else {
+          throw new Error('SEO分析请求失败');
+        }
+      } catch (error) {
+        console.error('SEO分析失败:', error);
+        throw new Error('SEO分析失败: ' + (error instanceof Error ? error.message : '未知错误'));
+      }
+
+      // 步骤5：竞争分析
+      try {
+        const competitiveResponse = await fetch('/api/optimize-competitive', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productInfo }),
+        });
+
+        if (competitiveResponse.ok) {
+          const competitiveData = await competitiveResponse.json();
+          if (competitiveData.success) {
+            competitiveResult = competitiveData.data;
+            setThinkingProgress('✅ 标题优化完成\n✅ 描述优化完成\n✅ 关键词优化完成\n✅ SEO分析完成\n✅ 竞争分析完成\n🔄 正在生成最终报告...');
+          } else {
+            throw new Error(competitiveData.error || '竞争分析失败');
+          }
+        } else {
+          throw new Error('竞争分析请求失败');
+        }
+      } catch (error) {
+        console.error('竞争分析失败:', error);
+        throw new Error('竞争分析失败: ' + (error instanceof Error ? error.message : '未知错误'));
+      }
+
+      // 生成最终优化结果
+      if (titleResult && descriptionResult && keywordsResult && seoResult && competitiveResult) {
+        const finalOptimization = {
+          title: titleResult,
+          description: descriptionResult,
+          keywords: keywordsResult,
+          seo: seoResult,
+          competitive: competitiveResult
+        };
+
+        console.log('设置最终优化结果:', finalOptimization);
+        setOptimizationResult(finalOptimization);
+        setThinkingProgress('🎉 所有优化完成！');
       } else {
-        throw new Error('AI优化服务暂不可用，请检查API配置或稍后重试');
+        throw new Error('部分优化失败，请重试');
       }
 
       console.log('AI优化完成');
