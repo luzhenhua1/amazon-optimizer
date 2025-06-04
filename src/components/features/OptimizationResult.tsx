@@ -42,43 +42,63 @@ export function OptimizationResult({
           <CardHeader className="text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="relative">
-                <div className="w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
-                <div className="absolute inset-0 w-4 h-4 bg-green-400 rounded-full animate-ping"></div>
+                <div className="w-4 h-4 bg-blue-500 rounded-full animate-pulse"></div>
+                <div className="absolute inset-0 w-4 h-4 bg-blue-400 rounded-full animate-ping"></div>
               </div>
               <CardTitle className="text-2xl font-bold text-gray-900">
-                DeepSeek AI深度分析中
+                AI 智能优化分析中
               </CardTitle>
             </div>
-            <p className="text-gray-600">
-              🧠 AI正在运用深度学习模型分析您的商品信息<br/>
-              📊 多维度评估：SEO优化、竞争分析、关键词策略、用户体验
+            <p className="text-gray-600 leading-relaxed">
+              🧠 运用先进AI模型深度分析您的商品信息<br/>
+              📊 全方位评估：内容优化、SEO策略、竞争分析、用户体验
             </p>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* 进度指示器 */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-600 font-medium">优化进度</span>
+                <span className="text-blue-600 font-semibold">分析中...</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 h-2.5 rounded-full animate-pulse" style={{width: '70%'}}></div>
+              </div>
+            </div>
+
             {/* 思考内容区域 */}
-            <div className="bg-white/70 rounded-lg p-6 border border-gray-200/50">
-              <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+            <div className="bg-white/80 rounded-xl p-6 border border-blue-100 shadow-sm">
+              <h4 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <Lightbulb className="w-5 h-5 text-blue-600" />
-                AI思考过程
+                实时分析过程
               </h4>
-              <div className="text-sm text-gray-700 font-mono whitespace-pre-wrap leading-relaxed min-h-32 max-h-64 overflow-y-auto bg-gray-50 rounded p-4 border">
-                {thinkingProgress || '🚀 正在启动DeepSeek推理引擎...\n🔍 加载商品分析模型...\n📋 初始化优化策略框架...'}
+              <div className="text-sm text-gray-700 font-mono whitespace-pre-wrap leading-relaxed min-h-32 max-h-64 overflow-y-auto bg-gray-50/80 rounded-lg p-4 border border-gray-200">
+                {thinkingProgress || '🚀 初始化AI分析引擎...\n🔍 加载商品优化模型...\n📋 准备多维度评估框架...'}
               </div>
             </div>
 
             {/* 状态指示器 */}
-            <div className="flex items-center justify-between p-4 bg-white/50 rounded-lg border border-gray-200/50">
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-white/60 to-blue-50/60 rounded-xl border border-blue-100">
               <div className="flex items-center gap-3">
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                  <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                <div className="flex space-x-1.5">
+                  <div className="w-2.5 h-2.5 bg-blue-500 rounded-full animate-bounce"></div>
+                  <div className="w-2.5 h-2.5 bg-indigo-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                  <div className="w-2.5 h-2.5 bg-purple-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                 </div>
-                <span className="text-sm text-gray-600 font-medium">深度分析中，请稍候...</span>
+                <span className="text-sm text-gray-700 font-medium">深度分析中，请稍候...</span>
               </div>
-              <div className="text-xs text-gray-500 bg-white/60 px-3 py-1 rounded-full">
-                ⚡ DeepSeek-R1
+              <div className="flex items-center gap-2">
+                <div className="text-xs text-blue-600 bg-blue-100 px-3 py-1.5 rounded-full font-medium">
+                  ⚡ DeepSeek V3
+                </div>
               </div>
+            </div>
+
+            {/* 技术说明 */}
+            <div className="text-center">
+              <p className="text-xs text-gray-500 leading-relaxed">
+                采用DeepSeek V3先进推理模型，为您提供专业的亚马逊商品优化建议
+              </p>
             </div>
           </CardContent>
         </Card>
